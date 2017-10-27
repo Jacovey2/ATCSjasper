@@ -1,4 +1,3 @@
-
 public class Salary {
 	private double annual;
 	public Salary(double salary) {
