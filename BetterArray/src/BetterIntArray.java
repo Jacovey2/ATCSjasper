@@ -1,8 +1,8 @@
 
-public class BetterArray {
+public class BetterIntArray {
 	private int[] arr;
 
-	public BetterArray(int[] setupArray) {
+	public BetterIntArray(int[] setupArray) {
 		arr = setupArray;
 	}
 
@@ -26,24 +26,24 @@ public class BetterArray {
 		for (int i = 0; i < vals.length; i++)
 			add(vals[i]);
 	}
-	
+
 	public void pop() {
 		int[] tempArr = new int[arr.length - 1];
-		for (int i = 0; i < arr.length-1; i++)
+		for (int i = 0; i < arr.length - 1; i++)
 			tempArr[i] = arr[i];
 		arr = tempArr;
 	}
 
 	public void remove(int val) {
 		int[] tempArr = new int[arr.length - contains(val)];
-		int index=0;
+		int index = 0;
 		for (int i = 0; i < arr.length; i++) {
 			if (arr[i] != val) {
 				tempArr[index] = arr[i];
 				index++;
 			}
 		}
-		arr=tempArr;
+		arr = tempArr;
 	}
 
 	public void remove(int[] vals) {
@@ -54,6 +54,7 @@ public class BetterArray {
 	public int size() {
 		return arr.length;
 	}
+
 	public int valueAt(int index) {
 		return arr[index];
 	}
@@ -68,12 +69,26 @@ public class BetterArray {
 			}
 		return tempArr;
 	}
+
 	public String toString() {
-		String s="";
+		String s = "";
 		for (int i = 0; i < arr.length; i++) {
-			s+=""+arr[i];
-			if (i+1<arr.length) s+=",";
+			s += "" + arr[i];
+			if (i + 1 < arr.length)
+				s += ", ";
 		}
 		return s;
+	}
+	
+	public int[] toArray() {
+		return arr;
+	}
+
+	public void removeDuplicates() {
+		BetterIntArray tempBetIntArr= new BetterIntArray(new int[0]);
+		for (int i = 0; i < arr.length; i++) 
+			if (tempBetIntArr.contains(arr[i])==0)
+				tempBetIntArr.add(arr[i]);
+		arr=tempBetIntArr.toArray();
 	}
 }
