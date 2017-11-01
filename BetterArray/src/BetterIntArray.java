@@ -50,7 +50,7 @@ public class BetterIntArray {
 			add(vals[i], startpos + i);
 	}
 
-	public int pop() {//pop last
+	public int pop() {// pop last
 		int[] tempArr = new int[arr.length - 1];
 		int retval = arr[arr.length - 1];
 		for (int i = 0; i < arr.length - 1; i++)
@@ -58,21 +58,22 @@ public class BetterIntArray {
 		arr = tempArr;
 		return retval;
 	}
-	public int pop(int position) {//indexed pop
+
+	public int pop(int position) {// indexed pop
 		int[] tempArr = new int[arr.length - 1];
 		int retval = 0;
 		for (int i = 0; i < arr.length; i++) {
-			if (i<position) 
+			if (i < position)
 				tempArr[i] = arr[i];
-			else if (i==position)
-				retval=arr[i];
-			else if (i>position)
-				tempArr[i-1] = arr[i];
+			else if (i == position)
+				retval = arr[i];
+			else if (i > position)
+				tempArr[i - 1] = arr[i];
 		}
 		arr = tempArr;
 		return retval;
 	}
-	
+
 	public void swap(int pos1, int pos2) {
 		int l = arr.length;
 		if (pos1 < l && pos1 >= 0 && pos2 < l && pos2 >= 0) {
