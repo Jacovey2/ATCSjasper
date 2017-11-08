@@ -12,8 +12,8 @@ public class TestBetterIntArray {
 
 		int retval = numberArray.pop();
 		System.out.println("Pop                              ::   " + numberArray + " :: " + retval);
-		retval = numberArray.pop(1);
-		System.out.println("Pop out 1                        ::   " + numberArray + " :: " + retval);
+		retval = numberArray.pop(3);
+		System.out.println("Pop out 3                        ::   " + numberArray + " :: " + retval);
 
 		numberArray.add(200);
 		System.out.println("Added [200]                      ::   " + numberArray);
@@ -26,7 +26,7 @@ public class TestBetterIntArray {
 
 		int[] tempArr2 = { 545, 444 };
 		numberArray.add(tempArr2, 2);
-		System.out.println("Added [131, 234, 512, 234]  at 2 ::   " + numberArray);
+		System.out.println("Added [545, 444]  at 2           ::   " + numberArray);
 
 		numberArray.remove(121);
 		System.out.println("Removed [121]                    ::   " + numberArray);
@@ -40,5 +40,11 @@ public class TestBetterIntArray {
 
 		numberArray.swap(0, 6);
 		System.out.println("Swap 0 and 5                     ::   " + numberArray);
+		
+		numberArray.bubbleSort();
+		System.out.println("Bubble Sort                      ::   " + numberArray);
+		
+		numberArray.randomize();
+		System.out.println("Randomize                        ::   " + numberArray);
 	}
 }

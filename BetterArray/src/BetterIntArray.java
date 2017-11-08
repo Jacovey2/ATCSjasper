@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.Random;
 
 public class BetterIntArray {
 	private int[] arr;
@@ -147,5 +149,41 @@ public class BetterIntArray {
 			if (tempBetIntArr.contains(arr[i]) == 0)
 				tempBetIntArr.add(arr[i]);
 		arr = tempBetIntArr.toArray();
+	}
+
+	public void bubbleSort() {
+		boolean done = false;
+		int checkLength=arr.length;
+		int checkCounter=0;
+		while (!done) {
+			boolean changing = false;
+			
+			for (int i = 0; i < checkLength; i++) {
+				checkCounter++;
+				if (i + 1 < checkLength && arr[i] > arr[i + 1]) {
+					swap(i, i + 1);
+					changing = true;
+				}
+			}
+			if (!changing)
+				done = true;
+			checkLength--;
+		}
+		System.out.println(checkCounter);
+	}
+
+	public void randomize() {
+		Random r = new Random();
+		BetterIntArray indecies = new BetterIntArray(new int[0]);
+		int[] newArr = new int[arr.length];
+		int index;
+		for (int i = 0; i < arr.length; i++) {
+			index = r.nextInt(arr.length);
+			while (indecies.contains(index) != 0)
+				index = r.nextInt(arr.length);
+			newArr[i] = arr[index];
+			indecies.add(index);
+		}
+		arr = newArr;
 	}
 }
