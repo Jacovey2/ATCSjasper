@@ -74,9 +74,6 @@ public class TestBetterIntArray {
 
 			numberArray.randomize();
 			System.out.println("Randomize                        ::   " + numberArray);
-			
-			numberArray.quickSort();
-			System.out.println("Quick Sort                       ::   " + numberArray);
 		}
 	}
 }
