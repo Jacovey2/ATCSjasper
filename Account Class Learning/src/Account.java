@@ -1,21 +1,39 @@
 public class Account {
-	//Variables
-	private double balance=0.0;
-	
-	//Constructors
-	public Account(double initBalance) {
-		balance=initBalance;
+	// Variables
+	protected double balance = 0.0;
+
+	// Constructors
+	public Account() {
+		balance = 0;
 	}
-	//Methods
+
+	public Account(double initBalance) {
+		balance = initBalance;
+	}
+
+	// Methods
 	public double getBalance() {
 		return balance;
 	}
-	public void deposit(double amt) {
-		if (amt>=0) balance+=amt;
-		else System.out.println("Invalid deposit");
+
+	public boolean deposit(double amt) {
+		if (amt >= 0) {
+			balance += amt;
+			return true;
+		} else {
+			System.out.println("Invalid deposit");
+			return false;
+		}
 	}
-	public void withdraw(double amt) {
-		if (amt>=0) balance-=amt;
-		else if (amt<=balance || amt<0)System.out.println("Invalid widthdrawel");
+
+	public boolean withdraw(double amt) {
+		if (amt >= 0) {
+			balance -= amt;
+			return true;
+		} else if (amt <= balance || amt < 0) {
+			System.out.println("Invalid widthdrawel");
+			return false;
+		}
+		return false;
 	}
 }
