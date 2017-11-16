@@ -47,8 +47,8 @@ public class Manage {
 			}
 			// if player doesn't blame, and NN doesn't blame
 			if (move == 1 && NNmove == 1) {
-				//gameBoxes[0].punish(1, 0.001);
-				//Loss += 1;
+				gameBoxes[0].punish(1, 0.001);
+				Loss += 1;
 			}
 			// if player blames, and NN doesn't blame
 			if (move == 0 && NNmove == 1) {
