@@ -42,10 +42,6 @@ public class Matchbox {
 	// Pick a move from the box
 	public int pickMove() {
 		try {
-			// Get the total
-			double total = 0;
-			for (int i = 0; i < moveWeights.length; i++)
-				total += moveWeights[i];
 
 			// Turn the weights into a list of percentages
 			double[] percentages = new double[moveWeights.length];

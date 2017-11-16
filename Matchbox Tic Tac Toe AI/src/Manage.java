@@ -9,7 +9,7 @@ public class Manage {
 		// No Magic Numbers (or Setup)
 		int NUMGAMESTATES = 1;
 		int NUMBEROFPOSMOVES = 2;
-		int ITTERATIONS = 100000;
+		int ITTERATIONS = 1000;
 		int ORGVAL=0;
 		int Loss = 0;
 		Scanner s = new Scanner(System.in);
