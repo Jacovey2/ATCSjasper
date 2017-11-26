@@ -9,10 +9,11 @@ public class Manage {
 	public static void main(String[] args) throws IOException {
 
 		// No Magic Numbers (or Setup)
-		int NUMGAMESTATES = 10; // number of decisions the computer has to make (at maximum)
+		int NUMGAMESTATES = 8; // number of decisions the computer has to make (at maximum)
 		int NUMBEROFPOSMOVES = 2; // number of possible choices for the computer to make (at maximum)
-		int TRAINITTERATIONS = 50000; // number of training examples
+		int TRAINITTERATIONS = 100000; // number of training examples
 		int PLAYITTERATIONS = 5; // number of player games after the training
+		boolean CLEAR_BOXES_AT_START=true; //toggle if re-learning and starting from scratch
 		int ORGVAL = 0; // Original value of all weights
 		double losses = 0; // # games lost
 		double wins = 0; // # games won
@@ -22,6 +23,9 @@ public class Manage {
 		Matchbox[] gameBoxes = new Matchbox[NUMGAMESTATES];
 		for (int i = 0; i < gameBoxes.length; i++) {
 			gameBoxes[i] = new Matchbox(NUMBEROFPOSMOVES, ORGVAL); // Initialize Matchboxes
+			if (!CLEAR_BOXES_AT_START)
+				gameBoxes[i].load("Matchbox_" + i);
+			System.out.println(gameBoxes[i]);
 		}
 
 		// File Setup
@@ -30,12 +34,12 @@ public class Manage {
 
 		// Actual Game
 		Random r = new Random();
+		int stackSize = NUMGAMESTATES;
 		for (int i = 0; i < TRAINITTERATIONS; i++) {
 
-			int stack = 10; // stack = # of pieces left in Nim game
+			int stack = stackSize; // stack = # of pieces left in Nim game
 			boolean won = false; // tell whether the correct game has been won
 			int wonBy = -1; // 0 is player, human is
-			int counter = 0;// just for aesthetics
 
 			// Path of Boxes in this game
 			ArrayList<Matchbox> boxPath = new ArrayList<Matchbox>();
@@ -43,14 +47,13 @@ public class Manage {
 			// One Game of Nim
 			System.out.println("Game #: " + (i + 1));
 			while (!won) {
-				// Human move
-				System.out.println("  Turn #: " + counter);
-				System.out.println("    How many pieces do you want to take out? (1-2)");
-
 				// Random player move (for now) **if you have a simple way of implementing a
-				// better-than-normal-strategy, please do**
-				int move = r.nextInt(2) + 1;// s.nextInt();
-				System.out.println("    Player move: " + move);
+				// better-than-random-strategy, please do**
+				int move = r.nextInt(2) + 1;
+				if (stack == 2)
+					move = 2;
+				if (stack == 1)
+					move = 1;
 
 				// removing from stack dependent on player input
 				stack -= move;
@@ -61,13 +64,12 @@ public class Manage {
 					wonBy = 0;
 				}
 
-				// ML move (checks for won again because if it didn't the computer would always
+				// ML move (checks for won again because if it didn't the computer could always
 				// win)
 				if (!won) {
 					int MLmove = gameBoxes[stack - 1].pickMove();
 					// Add this box to the stack of boxes used in this game (for training later)
 					boxPath.add(gameBoxes[stack - 1]);
-					System.out.println("    ML move: " + MLmove);
 					// removing pieces dependent on the computers output
 					stack -= (MLmove + 1);
 					// win determining
@@ -76,10 +78,6 @@ public class Manage {
 						wonBy = 1;
 					}
 				}
-				System.out.println(" Stack size:" + stack);
-
-				// just for aesthetics
-				counter++;
 			}
 
 			// Training after game
@@ -89,24 +87,24 @@ public class Manage {
 			for (int x = 0; x < path.length; x++) {
 				if (wonBy == 0)
 					path[x].punish(path[x].lastMove, .01);
-				if (wonBy == 1)
+				if (wonBy == 1) {
 					path[x].reinforce(path[x].lastMove, .01);
-				// print out that Box's contents
-				System.out.println("      " + gameBoxes[x].ToString());
+				}
 			}
 
 			// Loss Determining
 			if (wonBy == 0) {
 				losses += 1;
-				System.out.println("Player Won\n");
+				System.out.println("Player Won");
 
 			}
 			if (wonBy == 1) {
-				System.out.println("Computer Won\n");
+				System.out.println("Computer Won");
 				wins += 1;
 			}
 			// Writing to console
-			System.out.println("losses: " + losses + "\n" + "wins:" + wins + "\n");
+			System.out.println("  losses: " + losses + "\n" + "  wins: " + wins);
+			System.out.println("  percentage won: " + Math.round((wins / i)*10000)/100.0 + "\n");
 			// Writing to a log (for graphing on Octave)
 			// ---------------# lost out of all-----------% won out of games played
 			fileWriter.write(losses / TRAINITTERATIONS + " " + wins / i + "\n");
@@ -115,13 +113,20 @@ public class Manage {
 		fileWriter.flush();
 		fileWriter.close();
 
+		// Displaying and saving weights
+		System.out.println("                       1     2");
+		for (int i = 0; i < gameBoxes.length; i++) {
+			System.out.println("(" + i + ")" + gameBoxes[i]);
+			gameBoxes[i].save("Matchbox_" + i);
+		}
+
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Player_Moves~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-		// This is a repeat of the above code, but the program is just playing and not
+		// This is a repeat of the above code, but the matchboxes are playing not
 		// learning
-	  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 		for (int i = 0; i < PLAYITTERATIONS; i++) {
-			int stack = 10; // stack = # of pieces left in Nim game
+			int stack = stackSize; // stack = # of pieces left in Nim game
 			boolean won = false; // tell whether the correct game has been won
 			int wonBy = -1; // 0 is player, human is
 			while (!won) {
@@ -140,12 +145,12 @@ public class Manage {
 					won = true;
 					wonBy = 0;
 				}
+				System.out.println(" Stack size:" + stack);
 
-				// ML move (checks for won again because if it didn't the computer would always
+				// ML move (checks for won again because otherwise the computer would always
 				// win)
 				if (!won) {
 					int MLmove = gameBoxes[stack - 1].pickMove();
-					// Add this box to the stack of boxes used in this game (for training later)
 					System.out.println("    ML move: " + (MLmove + 1));
 					// removing pieces dependent on the computers output
 					stack -= (MLmove + 1);
