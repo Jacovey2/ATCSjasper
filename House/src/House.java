@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.applet.*;
 import java.util.Random;
 
 public class House {
