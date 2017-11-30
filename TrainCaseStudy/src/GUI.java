@@ -7,7 +7,7 @@ public class GUI extends Applet{
 	}
 	
 	public void paint(Graphics g) {
-		Train t = new Train(5, g);
+		Train t = new Train(4, g);
 	}
 	
 }

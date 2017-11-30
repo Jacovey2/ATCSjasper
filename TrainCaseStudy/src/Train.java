@@ -7,12 +7,16 @@ public class Train {
 		Engine e = new Engine(100,100,RandomColor(), g);
 		
 		//Make a list of the intermediate cars
-		Car[] cs = new Car[length];
-		for(int i=1; i<length-1; i++) {
-			cs[i]= new Car(100+(200*(i)),100,RandomColor(), g);
+		int diningCarPos= r.nextInt(length)+1;
+		Car[] cs = new Car[length+1];
+		for(int i=1; i<length+1; i++) {
+			if (i!=diningCarPos)
+				cs[i]= new Car(i,100+(200*(i)),100,RandomColor(), g);
+			else 
+				cs[i]= new DiningCar(100+(200*(i)),100,RandomColor(), g);
 		}
 		//Make the caboose
-		Caboose c = new Caboose(100+(200*(length-1)),100,RandomColor(), g);
+		Caboose c = new Caboose(100+(200*(length+1)),100,RandomColor(), g);
 	}
 	//Create a random color
 	private Color RandomColor() {
