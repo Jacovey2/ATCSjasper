@@ -11,7 +11,7 @@ public class Manage {
 		// No Magic Numbers (or Setup)
 		int NUMGAMESTATES = 8; // number of decisions the computer has to make (at maximum)
 		int NUMBEROFPOSMOVES = 2; // number of possible choices for the computer to make (at maximum)
-		int TRAINITTERATIONS = 100000; // number of training examples
+		int TRAINITTERATIONS = 1000; // number of training examples
 		int PLAYITTERATIONS = 5; // number of player games after the training
 		boolean CLEAR_BOXES_AT_START=true; //toggle if re-learning and starting from scratch
 		int ORGVAL = 0; // Original value of all weights
@@ -47,8 +47,7 @@ public class Manage {
 			// One Game of Nim
 			System.out.println("Game #: " + (i + 1));
 			while (!won) {
-				// Random player move (for now) **if you have a simple way of implementing a
-				// better-than-random-strategy, please do**
+				// Random player move (for now)
 				int move = r.nextInt(2) + 1;
 				if (stack == 2)
 					move = 2;
@@ -70,13 +69,9 @@ public class Manage {
 					int MLmove = gameBoxes[stack - 1].pickMove();
 					// Add this box to the stack of boxes used in this game (for training later)
 					boxPath.add(gameBoxes[stack - 1]);
-					// removing pieces dependent on the computers output
-					stack -= (MLmove + 1);
+					
 					// win determining
-					if (stack <= 0) {
-						won = true;
-						wonBy = 1;
-					}
+					
 				}
 			}
 
@@ -161,8 +156,6 @@ public class Manage {
 					}
 				}
 				System.out.println(" Stack size:" + stack);
-
-				// just for aesthetics
 			}
 			if (wonBy == 0)
 				System.out.println("Player Won\n");
