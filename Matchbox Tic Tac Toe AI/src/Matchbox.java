@@ -8,46 +8,36 @@ public class Matchbox {
 	private Random r = new Random();
 	public int nodeID;
 	private double[] moveWeights;
-	private double[] moveBiases;
 	public int lastMove;
-	private int Bound=20;
+	private int Bound = 20;
 
 	// Constructors
 	public Matchbox(int numPossibleMoves) {
 		moveWeights = new double[numPossibleMoves];
-		moveBiases = new double[numPossibleMoves];
 		for (int i = 0; i < moveWeights.length; i++) {
-			moveWeights[i] = 0;
-			moveBiases[i] = 0;
+			moveWeights[i] = ((r.nextDouble()/2)-.5);
 		}
 	}
 
 	public Matchbox(int numPossibleMoves, int initialGain) {
 		moveWeights = new double[numPossibleMoves];
-		moveBiases = new double[numPossibleMoves];
 		for (int i = 0; i < moveWeights.length; i++) {
-			moveWeights[i] = initialGain;
-			moveBiases[i] = 0;
-		}
-	}
-
-	// SetBiases
-	public void setBiases(double[] Biases) {
-		for (int i = 0; i < moveWeights.length; i++) {
-			moveBiases[i] = Biases[i];
+			moveWeights[i] = initialGain;//+((r.nextDouble()/2)-.5);
 		}
 	}
 
 	// Reinforce Family
 	public void reinforce(int weightIndex, double amount) {
 		moveWeights[weightIndex] += amount;
-		if (moveWeights[weightIndex]>Bound) moveWeights[weightIndex]=Bound;
+		if (moveWeights[weightIndex] > Bound)
+			moveWeights[weightIndex] = Bound;
 	}
 
 	// Punish Family
 	public void punish(int weightIndex, double amount) {
 		moveWeights[weightIndex] -= amount;
-		if (moveWeights[weightIndex] < -Bound) moveWeights[weightIndex] = -Bound;
+		if (moveWeights[weightIndex] < -Bound)
+			moveWeights[weightIndex] = -Bound;
 	}
 
 	// ToString method for a Matchbox
@@ -64,37 +54,36 @@ public class Matchbox {
 	}
 
 	// Save Weights to a file
-	public void save(String name) throws IOException {
-		File file = new File(name + ".txt");
+	public void save(String name, String Directory) throws IOException {
+		File file = new File(Directory + name + ".txt");
 		FileWriter fileWriter = new FileWriter(file);
 
-		for (int i = 0; i < moveWeights.length; i++)
+		for (int i = 0; i < moveWeights.length; i++) {
+			System.out.println(moveWeights[i]);
 			fileWriter.write(moveWeights[i] + "\n");
-
-		for (int i = 0; i < moveBiases.length; i++)
-			fileWriter.write(moveBiases[i] + "\n");
+		}
+		
+		fileWriter.write(lastMove +"");
 
 		fileWriter.flush();
 		fileWriter.close();
 	}
 
 	// Read weights from a file
-	public void load(String name) throws IOException {
+	public boolean load(String name, String Directory) throws IOException {
 		try {
-		File file = new File(name + ".txt");
-		Scanner input = new Scanner(file);
+			File file = new File(Directory + name + ".txt");
+			Scanner input = new Scanner(file);
 
-		for (int i = 0; i < moveWeights.length; i++) {
-			moveWeights[i] = input.nextDouble();
-		}
-
-		for (int i = 0; i < moveBiases.length; i++) {
-			moveBiases[i] = input.nextDouble();
-		}
-		input.close();
-		}
-		catch(java.io.FileNotFoundException e) {
-			System.out.println("Failed to load File");
+			for (int i = 0; i < moveWeights.length; i++) {
+				moveWeights[i] = input.nextDouble();
+			}
+			lastMove = input.nextInt();
+			//System.out.println(lastMove); // Hello
+			input.close();
+			return true;
+		} catch (java.io.FileNotFoundException e) {
+			return false;
 		}
 	}
 
@@ -104,32 +93,29 @@ public class Matchbox {
 			// Turn the weights into a list of activations
 			double[] activations = new double[moveWeights.length];
 			for (int i = 0; i < moveWeights.length; i++) {
-				// Determines the activations of the moves using a transformed sigmoid function
-				activations[i] = (1 + (-1 / (1 + Math.pow(Math.E, moveWeights[i])))) - moveBiases[i];
+				// Determines the activations of the moves using a transformed Sigmoid function
+				if (i==0) {
+					activations[i] = (1 + (-1 / (1 + Math.pow(Math.E, moveWeights[i]))));
+				}
+				else {
+					activations[i] = (1 + (-1 / (1 + Math.pow(Math.E, moveWeights[i]))))+activations[i-1];
+				}
 			}
 
 			// Pick one out of the percentage list
-			double picked = r.nextDouble() * activations[activations.length - 1];
+			double picked = r.nextDouble() * activations[activations.length-1];
+			
+			int index=0;
 			for (int i = 0; i < activations.length; i++) {
-				// if the randomly picked value is greater than activation[i], the option is
-				// picked
-				if (i == 0 && picked < activations[0]) {
-					lastMove = 0;
-					return 0;
-				} else if (i == activations.length - 1 && picked > activations[activations.length - 2]) {
-					lastMove = i;
-					return i;
-				} else if ((i > 0 && i < activations.length) && picked <= activations[i + 1] && picked > activations[i - 1]) {
-					lastMove = i;
-					return i;
-				}
+				// if the randomly picked value is greater than activation[i], the option is picked (recursively)
+				if (picked > activations[i]) {
+					index = i;
+				} 
 			}
-			// If it fails (somehow), it will return a nonsense negative value
-			System.err.println("!!!Failed!!!");
-			lastMove = -1;
-			return -1;
+			return index;
+			
 		} catch (ArrayIndexOutOfBoundsException exception) {
-			System.err.println("Array has invalid length: " + exception);
+			System.err.println("!ERR! Array has invalid length: " + exception);
 			lastMove = -1;
 			return -1;
 		}

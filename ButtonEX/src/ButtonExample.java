@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-//type Jframe
+//type JFrame
 public class ButtonExample extends JFrame implements ActionListener {
 	
 	//Constructor
