@@ -1,10 +1,9 @@
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 public class InventoryHandler {
-	private static ArrayList<Item> Items;
+	public static ArrayList<Item> Items;// I know its not convention, but I love these capitalized variables
 	private static ArrayList<Integer> IDs;
 	private static ArrayList<String> Names;
 	private int itterator;
@@ -54,6 +53,15 @@ public class InventoryHandler {
 			if (it.iD == ID) {
 				IDs.remove(it.iD);
 				Names.remove(it.name);
+				Items.remove(it);
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean removeItem(String name) {
+		for (Item it : Items) {
+			if (it.name.equals(name)) {
 				Items.remove(it);
 				return true;
 			}

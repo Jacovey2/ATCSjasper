@@ -1,18 +1,7 @@
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -25,18 +14,24 @@ import javax.swing.SwingConstants;
 
 public class WarehouseInterface extends JFrame implements ActionListener {
 	private String State = "CustomerLogin";
+	//Constants (Change for your system)
 	static String DATABASENAME = "InventoryDatabase";
 	static String DATABASEDIRECTORY = "/Users/jacovey/Documents/WarehouseProject/";
+	//Login String
 	public String loginStr;
+	//text fields (must be globally accessible)
 	private JTextField LoginStrTF;
 	private JTextField NameField;
 	private JTextField PPUField;
 	private JTextField Location1Field;
 	private JTextField Location2Field;
+	//Inventory Handler (aka "Container")
 	public static InventoryHandler IH;
+	
 	public WarehouseInterface (String state) {	
+		//Defaults to customer login, but can be put into another mode by instantiating it with a state variable
 		if (!state.equals("")) {
-		State=state;
+			State=state;
 		}
 		//Login Page
 		if(State.equals("CustomerLogin")) {
@@ -87,11 +82,9 @@ public class WarehouseInterface extends JFrame implements ActionListener {
 	    this.add(loc);
 	    this.add(ex); 
 		}
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 		else if (State.equals("Manager")) {
+			//Manger logins
 			this.setLayout(new GridLayout(1,2));
 			JPanel NavigationPanel = new JPanel();
 			JPanel InterfacesPanel = new JPanel();
@@ -160,45 +153,47 @@ public class WarehouseInterface extends JFrame implements ActionListener {
 			this.add(InterfacesPanel);
 			this.add(ItemsPanel);
 		}
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		else if (State.equals("Customer")) {
-			this.setLayout(new GridLayout(4,1));
-			this.add(new JLabel("Ikea Warehouse", SwingConstants.CENTER));
+			this.setLayout(new GridLayout(3,1));
 			//Top Panel
 			JPanel topPanel = new JPanel();
-			topPanel.setLayout(new GridLayout(1,5));
-			topPanel.add(new JLabel("Name"));
-			topPanel.add(new JLabel("Price"));
-			topPanel.add(new JLabel("ID"));
-			topPanel.add(new JLabel("Location"));
-			topPanel.add(new JLabel("Buy Option"));
+			topPanel.setLayout(new GridLayout(2,1));
+			topPanel.add(new JLabel("Ikea Warehouse", SwingConstants.CENTER));
+			JPanel tableHeader= new JPanel();
+			tableHeader.setLayout(new GridLayout(1,5));
+			tableHeader.add(new JLabel("Name"));
+			tableHeader.add(new JLabel("Price"));
+			tableHeader.add(new JLabel("ID"));
+			tableHeader.add(new JLabel("Location"));
+			tableHeader.add(new JLabel("Buy Option"));
+			topPanel.add(tableHeader);
 			this.add(topPanel);
 			JPanel bottomPanels = new JPanel();
-			bottomPanels.setLayout(new GridLayout(2,1));
-			JPanel bottomPanel1 = new JPanel();
-			JPanel bottomPanel2 = new JPanel();
-			bottomPanel1.setLayout(new BoxLayout(bottomPanel1,1));
-			bottomPanel2.setLayout(new BoxLayout(bottomPanel2,1));
+			bottomPanels.setLayout(new GridLayout(1,2));
+			JPanel bottomPanel = new JPanel();
+			bottomPanel.setLayout(new BoxLayout(bottomPanel,1));
+			//List of items (long grid layout)
 			for (int i=0; i<IH.count(); i++) {
-				JLabel tempLabel = new JLabel((i+1)+" - "+IH.getItemAt(i).toString());
-				tempLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-				bottomPanel1.add(new JLabel((i+1)+" - "+IH.getItemAt(i).toString()));
+				JPanel tempPanel = new JPanel();
+				tempPanel.setLayout(new GridLayout(1,5));
+				tempPanel.add(new JLabel(IH.getItemAt(i).iD+""));
+				tempPanel.add(new JLabel(IH.getItemAt(i).name));
+				tempPanel.add(new JLabel(IH.getItemAt(i).location+""));
+				tempPanel.add(new JLabel(IH.getItemAt(i).PPU+""));
 				JButton tempButton = new JButton ("Buy "+IH.getItemAt(i).name);
 				tempButton.addActionListener(this);
-				bottomPanel2.add(tempButton);
+				tempPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+				tempPanel.add(tempButton);
+				bottomPanel.add(tempPanel);
 			}
-			bottomPanels.add(bottomPanel1);
-			bottomPanels.add(bottomPanel2);
+			bottomPanels.add(bottomPanel);
 			this.add(bottomPanels);
 			
+			//Exit button
 			JButton menuExit = new JButton("Exit to menu");
 			menuExit.addActionListener(this);
 			this.add(menuExit);
 		}
-		
 		//Window Setup Final
 		this.setTitle("Warehouse Interface");
     this.setSize(500, 500);                      
@@ -207,18 +202,18 @@ public class WarehouseInterface extends JFrame implements ActionListener {
 	
 	public static void main (String[] args) {
 		new WarehouseInterface("");
-		IH = new InventoryHandler();
+		IH = new InventoryHandler();//stays constant
 	}
 	
 	public void actionPerformed(ActionEvent e) {
     String str = e.getActionCommand();	    
-    //System.out.println("You clicked " + str + " button");
  
-    if(str.equals("Login as Customer")) {
-  		this.dispose();
+    if(str.equals("Login as Customer")) {//Customer Login
+  			this.dispose();
+  			IH.loadInventory(DATABASENAME, DATABASEDIRECTORY);
     		new WarehouseInterface("Customer");
     } 
-    else if (str.equals("Switch to Manager login")) {
+    else if (str.equals("Switch to Manager login")) {//Switch to Manager Login 
     		this.dispose();
     		new WarehouseInterface("ManagerLogin");
     }
@@ -229,26 +224,31 @@ public class WarehouseInterface extends JFrame implements ActionListener {
 	    		new WarehouseInterface("Manager");
     		}
     }
-    else if (str.equals("Switch to Customer login")) {
+    else if (str.equals("Switch to Customer login")) {//Switch to Customer Login 
   		this.dispose();
     		new WarehouseInterface("CustomerLogin");
     }
-    else if (str.equals("Add")) {
+    else if (str.equals("Add")) { //Manager Add Button 
     		IH.addItem(NameField.getText(),Double.parseDouble(PPUField.getText()));
     		this.dispose();
     		new WarehouseInterface("Manager");
     }
-    else if(str.equals("Move")) {
+    else if(str.equals("Move")) { //Manager Move Button 
     		IH.forklift(Integer.parseInt(Location1Field.getText()), Integer.parseInt(Location2Field.getText()));
     		this.dispose();
     		new WarehouseInterface("Manager");
     }
-    else if(str.equals("Exit to menu")) {
+    else if(str.equals("Exit to menu")) { //Exit to Menu Button 
     		IH.saveInventory(DATABASENAME, DATABASEDIRECTORY);
     		this.dispose();
     		new WarehouseInterface("CustomerLogin");
     }  
-    else if(str.equals("Exit")) {
+    else if(str.startsWith("Buy")) {//Buying Button(s?)
+    		IH.removeItem(str.substring(4));
+    		this.dispose();
+    		new WarehouseInterface("Customer");
+    }
+    else if(str.equals("Exit")) {//Exit App Button
     		IH.saveInventory(DATABASENAME, DATABASEDIRECTORY);
     		System.exit(0);
     }  
