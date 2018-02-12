@@ -9,9 +9,15 @@ public class Item {
 		location=Location;
 		PPU=PricePerUnit;
 	}
+	public Item(int ID, String Name, int Location, double PricePerUnit) {
+		iD=ID;
+		name=Name;
+		location=Location;
+		PPU=PricePerUnit;
+	}
 	
 	public String toString() {
-		return iD+"-"+name+"-"+location;
+		return iD+" "+name+" "+location+" "+PPU+"\n";
 	}
 	
 }

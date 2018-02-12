@@ -1,8 +1,15 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,16 +24,17 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class WarehouseInterface extends JFrame implements ActionListener {
-	String State = "CustomerLogin";
+	private String State = "CustomerLogin";
+	static String DATABASENAME = "InventoryDatabase";
+	static String DATABASEDIRECTORY = "/Users/jacovey/Documents/WarehouseProject/";
 	public String loginStr;
 	private JTextField LoginStrTF;
 	private JTextField NameField;
-	private JTextField LocationField;
 	private JTextField PPUField;
 	private JTextField Location1Field;
 	private JTextField Location2Field;
 	public static InventoryHandler IH;
-	public WarehouseInterface (String state) {		
+	public WarehouseInterface (String state) {	
 		if (!state.equals("")) {
 		State=state;
 		}
@@ -79,32 +87,44 @@ public class WarehouseInterface extends JFrame implements ActionListener {
 	    this.add(loc);
 	    this.add(ex); 
 		}
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		else if (State.equals("Manager")) {
 			this.setLayout(new GridLayout(1,2));
+			JPanel NavigationPanel = new JPanel();
 			JPanel InterfacesPanel = new JPanel();
 			JPanel AddingPanel = new JPanel();
 			JPanel MovingPanel = new JPanel();
 			JPanel ItemsPanel = new JPanel();
+			
+			//TopButtons
+			JButton backToLogin = new JButton("Exit to menu");
+			JButton quitOut = new JButton("Exit");
+			backToLogin.addActionListener(this);
+			quitOut.addActionListener(this);
+			NavigationPanel.add(backToLogin);
+			NavigationPanel.add(quitOut);
+			
 			//AddingFields
 			JLabel NameFieldLabel =  new JLabel("Name:");
 			NameField = new JTextField();
-			JLabel LocationFieldLabel =  new JLabel("Location:");
-			LocationField = new JTextField();
 			JLabel PPUFieldLabel =  new JLabel("PPU:");
 			PPUField = new JTextField();
 			JButton Add = new JButton("Add");
+			
 			//MovingFields
 			JLabel Loc1FieldLabel =  new JLabel("Location 1:");
 			Location1Field = new JTextField();
 			JLabel Loc2FieldLabel =  new JLabel("Location 2:");
 			Location2Field = new JTextField();
 			JButton Move = new JButton("Move");
+			
 			//Adding
 			AddingPanel.setLayout(new GridLayout(7,1));
 			AddingPanel.add(NameFieldLabel);
 			AddingPanel.add(NameField);
-			AddingPanel.add(LocationFieldLabel);
-			AddingPanel.add(LocationField);
 			AddingPanel.add(PPUFieldLabel);
 			AddingPanel.add(PPUField);
 			Add.addActionListener(this);		  
@@ -117,10 +137,13 @@ public class WarehouseInterface extends JFrame implements ActionListener {
 			MovingPanel.add(Location2Field);
 			Move.addActionListener(this);
 			MovingPanel.add(Move);
+			
 			//Merging
-			InterfacesPanel.setLayout(new GridLayout(2,1));
+			InterfacesPanel.setLayout(new GridLayout(3,1));
+			InterfacesPanel.add(NavigationPanel);
 			InterfacesPanel.add(AddingPanel);
 			InterfacesPanel.add(MovingPanel);
+			
 			//Items
 			ItemsPanel.setLayout(new BoxLayout(ItemsPanel,1));
 			for (int i=0; i<IH.count(); i++) {
@@ -137,6 +160,10 @@ public class WarehouseInterface extends JFrame implements ActionListener {
 			this.add(InterfacesPanel);
 			this.add(ItemsPanel);
 		}
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		else if (State.equals("Customer")) {
 			this.setLayout(new GridLayout(4,1));
 			this.add(new JLabel("Ikea Warehouse", SwingConstants.CENTER));
@@ -185,7 +212,7 @@ public class WarehouseInterface extends JFrame implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
     String str = e.getActionCommand();	    
-    System.out.println("You clicked " + str + " button");
+    //System.out.println("You clicked " + str + " button");
  
     if(str.equals("Login as Customer")) {
   		this.dispose();
@@ -198,6 +225,7 @@ public class WarehouseInterface extends JFrame implements ActionListener {
     else if (str.equals("Login as Manager")) {
     		if (LoginStrTF.getText().equals("password123")) {//Very secure password
 	  			this.dispose();
+	  			IH.loadInventory(DATABASENAME, DATABASEDIRECTORY);
 	    		new WarehouseInterface("Manager");
     		}
     }
@@ -206,7 +234,7 @@ public class WarehouseInterface extends JFrame implements ActionListener {
     		new WarehouseInterface("CustomerLogin");
     }
     else if (str.equals("Add")) {
-    		IH.addItem(new Item(NameField.getText(),Integer.parseInt(LocationField.getText()),Double.parseDouble(PPUField.getText())));
+    		IH.addItem(NameField.getText(),Double.parseDouble(PPUField.getText()));
     		this.dispose();
     		new WarehouseInterface("Manager");
     }
@@ -215,9 +243,14 @@ public class WarehouseInterface extends JFrame implements ActionListener {
     		this.dispose();
     		new WarehouseInterface("Manager");
     }
+    else if(str.equals("Exit to menu")) {
+    		IH.saveInventory(DATABASENAME, DATABASEDIRECTORY);
+    		this.dispose();
+    		new WarehouseInterface("CustomerLogin");
+    }  
     else if(str.equals("Exit")) {
+    		IH.saveInventory(DATABASENAME, DATABASEDIRECTORY);
     		System.exit(0);
     }  
-    System.out.println(State);
   }
 }
