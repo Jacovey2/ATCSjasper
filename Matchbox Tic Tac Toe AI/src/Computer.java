@@ -6,7 +6,6 @@ public class Computer {
 	public static String currentBoxID;
 	
 	public static int pickMove(int[] gameBoard) throws IOException {
-		
 		//Creating the ID for this box
 		String ID = "MatchBox (";
 		for (int i = 0; i < gameBoard.length; i++) {
@@ -16,6 +15,7 @@ public class Computer {
 				ID += gameBoard[i] + "";
 		} 
 		ID+=")";
+		
 		currentBoxID=ID;
 		
 		// File Setup

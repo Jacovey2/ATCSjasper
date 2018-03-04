@@ -15,14 +15,14 @@ public class Matchbox {
 	public Matchbox(int numPossibleMoves) {
 		moveWeights = new double[numPossibleMoves];
 		for (int i = 0; i < moveWeights.length; i++) {
-			moveWeights[i] = ((r.nextDouble()/2)-.5);
+			moveWeights[i] = ((r.nextDouble() / 2) - 0.5);
 		}
 	}
 
 	public Matchbox(int numPossibleMoves, int initialGain) {
 		moveWeights = new double[numPossibleMoves];
 		for (int i = 0; i < moveWeights.length; i++) {
-			moveWeights[i] = initialGain;//+((r.nextDouble()/2)-.5);
+			moveWeights[i] = initialGain;// +((r.nextDouble()/2)-.5);
 		}
 	}
 
@@ -59,11 +59,11 @@ public class Matchbox {
 		FileWriter fileWriter = new FileWriter(file);
 
 		for (int i = 0; i < moveWeights.length; i++) {
-			System.out.println(moveWeights[i]);
+			// System.out.println(moveWeights[i]);
 			fileWriter.write(moveWeights[i] + "\n");
 		}
-		
-		fileWriter.write(lastMove +"");
+
+		fileWriter.write(lastMove + "");
 
 		fileWriter.flush();
 		fileWriter.close();
@@ -79,7 +79,7 @@ public class Matchbox {
 				moveWeights[i] = input.nextDouble();
 			}
 			lastMove = input.nextInt();
-			//System.out.println(lastMove); // Hello
+			// System.out.println(lastMove);
 			input.close();
 			return true;
 		} catch (java.io.FileNotFoundException e) {
@@ -92,28 +92,34 @@ public class Matchbox {
 		try {
 			// Turn the weights into a list of activations
 			double[] activations = new double[moveWeights.length];
-			for (int i = 0; i < moveWeights.length; i++) {
+			activations[0] = (1 + (-1 / (1 + Math.pow(Math.E, moveWeights[0]))));
+			System.out.print("Activation minimums (length is "+moveWeights.length+"): [" + activations[0] / moveWeights.length + ",");
+			for (int i = 1; i < moveWeights.length; i++) {
 				// Determines the activations of the moves using a transformed Sigmoid function
-				if (i==0) {
-					activations[i] = (1 + (-1 / (1 + Math.pow(Math.E, moveWeights[i]))));
-				}
-				else {
-					activations[i] = (1 + (-1 / (1 + Math.pow(Math.E, moveWeights[i]))))+activations[i-1];
-				}
+				activations[i] = ((1 + (-1 / (1 + Math.pow(Math.E, moveWeights[i])))) / moveWeights.length)
+						+ activations[i - 1];
+				if (i != moveWeights.length - 1) {
+					System.out.print(activations[i] + ", ");
+				}else System.out.print(activations[i]+"");
+
 			}
+			System.out.print("]\n");
 
 			// Pick one out of the percentage list
-			double picked = r.nextDouble() * activations[activations.length-1];
-			
-			int index=0;
+			double picked = r.nextDouble() * activations[activations.length - 1];
+			System.out.print("Picked:" + picked + "       ");
+
+			int index = 0;
 			for (int i = 0; i < activations.length; i++) {
-				// if the randomly picked value is greater than activation[i], the option is picked (recursively)
+				// if the randomly picked value is greater than activation[i], the option is
+				// picked
 				if (picked > activations[i]) {
 					index = i;
-				} 
+				}
 			}
+			System.out.println("index: " + index + "\n");
 			return index;
-			
+
 		} catch (ArrayIndexOutOfBoundsException exception) {
 			System.err.println("!ERR! Array has invalid length: " + exception);
 			lastMove = -1;

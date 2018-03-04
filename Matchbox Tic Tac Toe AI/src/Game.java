@@ -17,7 +17,7 @@ public class Game {
 		while (!won) {
 			// Computer = 1
 			int cmove = Computer.pickMove(board);
-			while (cmove >= 9 && cmove < 0 && board[cmove] != 0) // re-picking until its a valid move
+			while (cmove >= 9 || cmove < 0 || board[cmove] != 0) // re-picking until its a valid move
 				cmove = Computer.pickMove(board);
 			boxPath.add(Computer.currentBoxID);
 			board[cmove] = 1;// commit that move to the board
@@ -25,9 +25,8 @@ public class Game {
 
 			//check for win
 			wonBy = checkWin(board);
-			if (wonBy == 1 || wonBy == 2) {
+			if (wonBy == 1 || wonBy == 2) 
 				won = true;
-			}
 
 			// Player = 2
 			if (!won) {
@@ -44,6 +43,7 @@ public class Game {
 				}
 			}
 		}
+		displayGrid(board);
 	}
 
 	public void displayGrid(int[] Grid) {
@@ -67,7 +67,6 @@ public class Game {
 
 	public int checkWin(int[] board) {
 		int wonby = -1;
-
 		// Rows
 		if (board[0] == board[1] && board[1] == board[2] && board[2] != 0)
 			wonby = board[0];
@@ -89,7 +88,6 @@ public class Game {
 			wonby = board[2];
 		if (board[0] == board[4] && board[4] == board[8] && board[8] != 0)
 			wonby = board[0];
-
 		return wonby;
 	}
 }

@@ -11,10 +11,10 @@ public class Manage {
 	// int NUMGAMESTATES = 8; // number of decisions the computer has to make (at
 	// maximum)
 	public static int NUMBEROFPOSMOVES = 9; // number of possible choices for the computer to make (at maximum)
-	public static int TRAINITTERATIONS = 10000; // number of training examples
+	public static int TRAINITTERATIONS = 3; // number of training examples
 	public static String MATCHBOXDIRECTORY = "/Users/jacovey/Documents/Matchboxes/";
 	// int PLAYITTERATIONS = 5; // number of player games after the training
-	public static boolean CLEAR_BOXES_AT_START = false; // toggle if re-learning and starting from scratch
+	public static boolean CLEAR_BOXES_AT_START = true; // toggle if re-learning and starting from scratch
 	public static int ORGVAL = 0; // Original value of all weights
 	static double losses = 0; // # games lost
 	static double wins = 0; // # games won
